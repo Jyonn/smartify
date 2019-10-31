@@ -29,7 +29,7 @@ class E(Exception):
         E.__id += 1
 
     def d(self):
-        return Attribute.dictify(self, 'message->msg', 'eid', 'ph->http_code')
+        return Attribute.dictify(self, 'message->msg', 'eid')
 
     def eis(self, e: 'E'):
         return self.eid == e.eid
@@ -46,10 +46,12 @@ class E(Exception):
         try:
             instance.message = instance.message.format(*args, **kwargs)
         except Exception as err:
-            raise BaseError.ERROR_GENERATE(debug_message=str(err))
+            raise BaseError.ERROR_GENERATE(debug_message=err)
         return instance
 
-    def __call__(self, *args, debug_message: str = None, **kwargs):
+    def __call__(self, *args, debug_message=None, **kwargs):
+        if debug_message and not isinstance(debug_message, str):
+            debug_message = str(debug_message)
         return self._instantiate(*args, debug_message=debug_message, **kwargs)
 
     def __str__(self):
