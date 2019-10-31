@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='smartify',
-    version='0.0.1 alpha6',
+    version='0.0.1 alpha7',
     keywords=('easy', 'smart', 'field detect', 'error handle'),
     description='Make your python development easier',
     long_description='Supporting analysing field and customizing error',

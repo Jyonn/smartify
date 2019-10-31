@@ -73,7 +73,7 @@ class E(Exception):
 
     @classmethod
     def register(cls, id_processor: Optional[Callable] = None):
-        def wrapper(class_: ClassVar):
+        def wrapper(class_):
             for name in class_.__dict__:  # type: str
                 e = getattr(class_, name)
                 if isinstance(e, E) and e.as_template:

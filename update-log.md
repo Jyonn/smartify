@@ -22,7 +22,7 @@
 
 - Add abundant option to stay/remove fields not appeared in PDict
 
-### 0.0.1 alpha6
+### 0.0.1 alpha7
 
 - Remove ClassVar type hint in error.py, for the compatibility of
   Python3.5
