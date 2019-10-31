@@ -12,3 +12,8 @@
 
 - Remove hc->http_code in E.d
 - Auto stringify the debug_message
+
+### 0.0.1 alpha4
+
+- Auto converting string to P object
+- Add d_debug in E to show debug information

@@ -119,8 +119,12 @@ class P:
         self._dict_fields = list()
         return self._add_dict_fields(*fields)
 
-    def _add_dict_fields(self, *fields: 'P'):
-        self._dict_fields.extend(fields)
+    def _add_dict_fields(self, *fields: Union['P', str]):
+        for field in fields:
+            if isinstance(field, str):
+                self._dict_fields.append(P(field))
+            else:
+                self._dict_fields.append(field)
         return self
 
     def _set_list_child(self, child: Optional['P']):

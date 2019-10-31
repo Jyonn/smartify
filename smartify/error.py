@@ -31,6 +31,9 @@ class E(Exception):
     def d(self):
         return Attribute.dictify(self, 'message->msg', 'eid')
 
+    def d_debug(self):
+        return Attribute.dictify(self, 'message->msg', 'eid', 'debug_message', 'identifier')
+
     def eis(self, e: 'E'):
         return self.eid == e.eid
 
