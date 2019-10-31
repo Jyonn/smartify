@@ -1,5 +1,5 @@
 import copy
-from typing import ClassVar, Dict, Optional, Callable
+from typing import Dict, Optional, Callable
 
 from .attribute import Attribute
 
@@ -20,7 +20,7 @@ class E(Exception):
         self.message = message  # str
         self.debug_message = None
         self.eid = E.__id
-        self.class_ = None  # type: ClassVar
+        self.class_ = None
 
         self.as_template = True
         self.origin = self

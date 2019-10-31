@@ -17,3 +17,12 @@
 
 - Auto converting string to P object
 - Add d_debug in E to show debug information
+
+### 0.0.1 alpha5
+
+- Add abundant option to stay/remove fields not appeared in PDict
+
+### 0.0.1 alpha6
+
+- Remove ClassVar type hint in error.py, for the compatibility of
+  Python3.5

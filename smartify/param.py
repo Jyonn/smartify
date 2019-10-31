@@ -175,7 +175,7 @@ class P:
     def _has_default(self):
         return self._default_value != self.__NoDefault
 
-    def run(self, value):
+    def run(self, value, abundant=False):
         yield_name = self.yield_name
 
         if value is None:
@@ -201,12 +201,21 @@ class P:
         elif self.is_dict:
             if not isinstance(value, dict):
                 raise PError.REQUIRE_DICT(self.name, self.read_name)
-            new_value = {}
-            for child_field in self._dict_fields:
-                child_value = value.get(child_field.name)
-                child_yield_name, child_new_value = child_field.run(child_value)
-                new_value[child_yield_name] = child_new_value
-            value = new_value
+
+            if abundant:
+                for child_field in self._dict_fields:
+                    child_value = value.get(child_field.name)
+                    child_yield_name, child_new_value = child_field.run(child_value)
+                    value[child_yield_name] = child_new_value
+                    if child_field.name in value and child_yield_name != child_field.name:
+                        del value[child_field.name]
+            else:
+                new_value = {}
+                for child_field in self._dict_fields:
+                    child_value = value.get(child_field.name)
+                    child_yield_name, child_new_value = child_field.run(child_value)
+                    new_value[child_yield_name] = child_new_value
+                value = new_value
 
         for processor in self._processors:
             error = PError.VALIDATOR_CRUSHED \
