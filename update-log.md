@@ -26,3 +26,12 @@
 
 - Remove ClassVar type hint in error.py, for the compatibility of
   Python3.5
+  
+### 0.0.1 alpha8
+
+- Concat type can be customized, with append_handler
+- We make more features of P public, easy for fetching
+
+### 0.0.1 alpha9
+
+- Make _has_default of P public

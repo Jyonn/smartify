@@ -91,12 +91,12 @@ class P:
         self.yield_name = yield_name or yield_name_
 
         self._null = False
-        self._default_value = self.__NoDefault
-        self._default_through_processors = False
+        self.default_value = self.__NoDefault
+        self.default_through_processors = False
 
-        self._type = type_
-        self._dict_fields = list()  # type: List[P]
-        self._list_child = None  # type: Optional[P]
+        self.type = type_
+        self.dict_fields = list()  # type: List[P]
+        self.list_child = None  # type: Optional[P]
 
         self._processors = []
 
@@ -105,30 +105,30 @@ class P:
 
     @property
     def is_list(self):
-        return self._type == self.LIST
+        return self.type == self.LIST
 
     @property
     def is_dict(self):
-        return self._type == self.DICT
+        return self.type == self.DICT
 
     @property
     def is_atom(self):
-        return self._type == self.ATOM
+        return self.type == self.ATOM
 
     def _set_dict_fields(self, *fields):
-        self._dict_fields = list()
+        self.dict_fields = list()
         return self._add_dict_fields(*fields)
 
     def _add_dict_fields(self, *fields: Union['P', str]):
         for field in fields:
             if isinstance(field, str):
-                self._dict_fields.append(P(field))
+                self.dict_fields.append(P(field))
             else:
-                self._dict_fields.append(field)
+                self.dict_fields.append(field)
         return self
 
     def _set_list_child(self, child: Optional['P']):
-        self._list_child = child
+        self.list_child = child
         return self
 
     def rename(self, name: str, read_name: str = None, yield_name: str = None, stay_origin=False):
@@ -143,10 +143,10 @@ class P:
 
     def default(self, value=None, allow=True, through_processors=False):
         if allow:
-            self._default_value = value
+            self.default_value = value
         else:
-            self._default_value = self.__NoDefault
-        self._default_through_processors = through_processors
+            self.default_value = self.__NoDefault
+        self.default_through_processors = through_processors
         return self
 
     def process(self, processor: Union[Processor, Callable], begin=False):
@@ -168,12 +168,12 @@ class P:
     def clone(self):
         p = copy.copy(self)
         p._processors = copy.copy(self._processors)
-        p._dict_fields = copy.copy(self._dict_fields)
+        p.dict_fields = copy.copy(self.dict_fields)
         return p
 
     @property
-    def _has_default(self):
-        return self._default_value != self.__NoDefault
+    def has_default(self):
+        return self.default_value != self.__NoDefault
 
     def run(self, value, abundant=False):
         yield_name = self.yield_name
@@ -181,21 +181,21 @@ class P:
         if value is None:
             if self._null:
                 return yield_name, None
-            if self._has_default:
-                if not self._default_through_processors:
-                    return yield_name, self._default_value
+            if self.has_default:
+                if not self.default_through_processors:
+                    return yield_name, self.default_value
                 else:
-                    value = self._default_value
+                    value = self.default_value
             else:
                 raise PError.NULL_NOT_ALLOW(self.name, self.read_name)
 
         if self.is_list:
             if not isinstance(value, list):
                 raise PError.REQUIRE_LIST(self.name, self.read_name)
-            if isinstance(self._list_child, P):
+            if isinstance(self.list_child, P):
                 new_value = []
                 for child_value in value:
-                    _, child_new_value = self._list_child.run(child_value)
+                    _, child_new_value = self.list_child.run(child_value)
                     new_value.append(child_new_value)
                 value = new_value
         elif self.is_dict:
@@ -203,7 +203,7 @@ class P:
                 raise PError.REQUIRE_DICT(self.name, self.read_name)
 
             if abundant:
-                for child_field in self._dict_fields:
+                for child_field in self.dict_fields:
                     child_value = value.get(child_field.name)
                     child_yield_name, child_new_value = child_field.run(child_value)
                     value[child_yield_name] = child_new_value
@@ -211,7 +211,7 @@ class P:
                         del value[child_field.name]
             else:
                 new_value = {}
-                for child_field in self._dict_fields:
+                for child_field in self.dict_fields:
                     child_value = value.get(child_field.name)
                     child_yield_name, child_new_value = child_field.run(child_value)
                     new_value[child_yield_name] = child_new_value

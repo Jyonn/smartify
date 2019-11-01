@@ -1,6 +1,7 @@
 import copy
 from typing import Dict, Optional, Callable
 
+from .symbol import Symbol
 from .attribute import Attribute
 
 
@@ -11,22 +12,38 @@ class E(Exception):
     sid2e = dict()  # type: Dict[str, E]
     eid2e = dict()  # type: Dict[int, E]
 
+    class Concat:
+        APPEND = Symbol()
+        FORMAT = Symbol()
+        PERCENT = Symbol()
+
     """
     Old version has an attribute "ph", which means the placeholder style.
     Now we standardize it as "format".
     """
 
-    def __init__(self, message: str):
-        self.message = message  # str
+    def __init__(self, template: str, concat=Concat.FORMAT):
+        self.template = template  # str
+        self.message = template
         self.debug_message = None
         self.eid = E.__id
         self.class_ = None
+
+        self.concat = concat
+        self.append_handler = '{0} {1}'.format
 
         self.as_template = True
         self.origin = self
         self._identifier = None
 
         E.__id += 1
+
+    def set_append_handler(self, handler):
+        if isinstance(handler, str):
+            self.append_handler = handler.format
+        elif callable(handler):
+            self.append_handler(handler)
+        return self
 
     def d(self):
         return Attribute.dictify(self, 'message->msg', 'eid')
@@ -47,7 +64,12 @@ class E(Exception):
         instance.as_template = False
         instance.debug_message = debug_message
         try:
-            instance.message = instance.message.format(*args, **kwargs)
+            if instance.concat == self.Concat.FORMAT:
+                instance.message = instance.template.format(*args, **kwargs)
+            elif instance.concat == self.Concat.PERCENT:
+                instance.message = instance.template % args
+            else:
+                instance.message = instance.append_handler(instance.template, args[0])
         except Exception as err:
             raise BaseError.ERROR_GENERATE(debug_message=err)
         return instance
