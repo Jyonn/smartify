@@ -35,3 +35,13 @@
 ### 0.0.1 alpha9
 
 - Make _has_default of P public
+
+### 0.0.2 alpha
+
+- Make _processors, _null of P public
+- Fix DocWriter get_doc crushed error
+
+### 0.0.2 alpha2
+
+- Remove concat type, set format as fixed concat type
+- Separate append information as append_message

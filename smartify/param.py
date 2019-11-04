@@ -61,12 +61,15 @@ class Processor:
         self.doc = self.doc or ('Validator' if only_validate else 'Processor')
 
     def _get_doc(self, processor):
-        writer = self._DocWriters.get(processor)
-        if writer:
-            if isinstance(writer, str):
-                return writer
-            if callable(writer):
-                return writer(processor)
+        try:
+            writer = self._DocWriters.get(processor)
+            if writer:
+                if isinstance(writer, str):
+                    return writer
+                if callable(writer):
+                    return writer(processor)
+        except TypeError:
+            pass
         return processor.__doc__
 
 
@@ -90,7 +93,7 @@ class P:
         self.read_name = read_name or name
         self.yield_name = yield_name or yield_name_
 
-        self._null = False
+        self.allow_null = False
         self.default_value = self.__NoDefault
         self.default_through_processors = False
 
@@ -98,7 +101,7 @@ class P:
         self.dict_fields = list()  # type: List[P]
         self.list_child = None  # type: Optional[P]
 
-        self._processors = []
+        self.processors = []
 
     def __str__(self):
         return '%s(%s)' % (self.name, self.read_name)
@@ -138,7 +141,7 @@ class P:
         return self
 
     def null(self, allow=True):
-        self._null = allow
+        self.allow_null = allow
         return self
 
     def default(self, value=None, allow=True, through_processors=False):
@@ -153,21 +156,21 @@ class P:
         if not isinstance(processor, Processor):
             processor = Processor(processor)
         if begin:
-            self._processors.insert(0, processor)
+            self.processors.insert(0, processor)
         else:
-            self._processors.append(processor)
+            self.processors.append(processor)
         return self
 
     def validate(self, validator: Callable, begin=False):
         if begin:
-            self._processors.insert(0, Processor(validator, only_validate=True))
+            self.processors.insert(0, Processor(validator, only_validate=True))
         else:
-            self._processors.append(Processor(validator, only_validate=True))
+            self.processors.append(Processor(validator, only_validate=True))
         return self
 
     def clone(self):
         p = copy.copy(self)
-        p._processors = copy.copy(self._processors)
+        p.processors = copy.copy(self.processors)
         p.dict_fields = copy.copy(self.dict_fields)
         return p
 
@@ -179,7 +182,7 @@ class P:
         yield_name = self.yield_name
 
         if value is None:
-            if self._null:
+            if self.allow_null:
                 return yield_name, None
             if self.has_default:
                 if not self.default_through_processors:
@@ -217,7 +220,7 @@ class P:
                     new_value[child_yield_name] = child_new_value
                 value = new_value
 
-        for processor in self._processors:
+        for processor in self.processors:
             error = PError.VALIDATOR_CRUSHED \
                 if processor.only_validate else PError.PROCESSOR_CRUSHED
 
