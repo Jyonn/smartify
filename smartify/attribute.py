@@ -22,7 +22,7 @@ class Attribute:
             else:
                 arg = tuple()
 
-            yield_name, name = Attribute.arrow_extract(name)
+            name, yield_name = Attribute.arrow_extract(name)
 
             value = getattr(o, name, None)
             readable_func = getattr(o, '_readable_%s' % name, None)

@@ -49,3 +49,11 @@
 ### 0.0.2 alpha3
 
 - Fix the problem of the lack of the field of E in d
+
+### 0.0.2 alpha4
+
+- Fix the error of Attribute.dictify
+
+### 0.0.2 alpha5
+
+- Fix the error of append_message->msg

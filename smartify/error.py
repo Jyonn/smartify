@@ -31,7 +31,8 @@ class E(Exception):
         E.__id += 1
 
     def d(self):
-        return Attribute.dictify(self, 'message->msg', 'eid', 'identifier', 'append_message->msg')
+        return Attribute.dictify(
+            self, 'message->msg', 'eid', 'identifier', 'append_message->append_msg')
 
     def d_debug(self):
         dict_ = self.d()
