@@ -31,10 +31,12 @@ class E(Exception):
         E.__id += 1
 
     def d(self):
-        return Attribute.dictify(self, 'message->msg', 'eid')
+        return Attribute.dictify(self, 'message->msg', 'eid', 'identifier', 'append_message->msg')
 
     def d_debug(self):
-        return Attribute.dictify(self, 'message->msg', 'eid', 'debug_message', 'identifier')
+        dict_ = self.d()
+        dict_.update(Attribute.dictify(self, 'debug_message->debug_msg'))
+        return dict_
 
     def eis(self, e: 'E'):
         return self.eid == e.eid

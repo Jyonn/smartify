@@ -45,3 +45,7 @@
 
 - Remove concat type, set format as fixed concat type
 - Separate append information as append_message
+
+### 0.0.2 alpha3
+
+- Fix the problem of the lack of the field of E in d
